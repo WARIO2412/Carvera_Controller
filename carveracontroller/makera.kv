@@ -712,6 +712,20 @@
             if self.text != tr._("Set..."): app.root.controller.setToolCommand(self.text[-1])
             if self.text != tr._("Set..."): self.text = tr._('Set...')
             root.select('Third Item')
+    Button:
+        text: tr._('Clamp')
+        size_hint_y: None
+        height: '40dp'
+        on_release:
+            root.select('Third Item')
+            app.root.controller.clampAtcCommand()
+    Button:
+        text: tr._('Unclamp')
+        size_hint_y: None
+        height: '40dp'
+        on_release:
+            root.select('Third Item')
+            app.root.controller.unclampAtcCommand()
 
 
 <LaserDropDown>:
