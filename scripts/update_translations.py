@@ -16,7 +16,7 @@ PY_FILES = ["main.py", "Controller.py", "GcodeViewer.py"]  # Python source files
 KV_FILES = ["makera.kv"]  # .kv files
 
 POT_FILE = "locales/messages.pot"
-LANGUAGES = ["en","zh-CN"]  # Supported Languages
+LANGUAGES = ["en","zh-CN", "de-CH"]  # Supported Languages
 
 BUILD_PATH = Path(__file__).parent.resolve()
 PACKAGE_NAME = "carveracontroller"
@@ -43,7 +43,7 @@ def generate_po():
         if not os.path.exists(po_file):
             # Initialize the .po file using msginit
             lang_code = po_file.split('/')[-3]  # Extract language code from file path
-            subprocess.run(["msginit", "-l", lang_code, "-i", POT_FILE, "-o", po_file])
+            subprocess.run(["msginit", "-l", lang_code, "-i", POT_FILE, "-o", po_file], cwd=PACKAGE_PATH)
             print(f"Created new .po file: {po_file}")
         else:
             # Update existing .po file with new entries from .pot file
