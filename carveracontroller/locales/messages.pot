@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-08 17:29+1100\n"
+"POT-Creation-Date: 2024-12-09 21:44+1100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,461 +17,465 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: main.py:122
+#: main.py:123
 msgid "Halt Manually"
 msgstr ""
 
-#: main.py:123
+#: main.py:124
 msgid "Home Fail"
 msgstr ""
 
-#: main.py:124
+#: main.py:125
 msgid "Probe Fail"
 msgstr ""
 
-#: main.py:125
+#: main.py:126
 msgid "Calibrate Fail"
 msgstr ""
 
-#: main.py:126
+#: main.py:127
 msgid "ATC Home Fail"
 msgstr ""
 
-#: main.py:127
+#: main.py:128
 msgid "ATC Invalid Tool Number"
 msgstr ""
 
-#: main.py:128
+#: main.py:129
 msgid "ATC Drop Tool Fail"
 msgstr ""
 
-#: main.py:129
+#: main.py:130
 msgid "ATC Position Occupied"
 msgstr ""
 
-#: main.py:130
+#: main.py:131
 msgid "Spindle Overheated"
 msgstr ""
 
-#: main.py:131
+#: main.py:132
 msgid "Soft Limit Triggered"
 msgstr ""
 
-#: main.py:132
+#: main.py:133
 msgid "Cover opened when playing"
 msgstr ""
 
-#: main.py:133
+#: main.py:134
 msgid "Wireless probe dead or not set"
 msgstr ""
 
-#: main.py:134
+#: main.py:135
 msgid "Emergency stop button pressed"
 msgstr ""
 
-#: main.py:136
+#: main.py:137
 msgid "Hard Limit Triggered, reset needed"
 msgstr ""
 
-#: main.py:137
+#: main.py:138
 msgid "X Axis Motor Error, reset needed"
 msgstr ""
 
-#: main.py:138
+#: main.py:139
 msgid "Y Axis Motor Error, reset needed"
 msgstr ""
 
-#: main.py:139
+#: main.py:140
 msgid "Z Axis Motor Error, reset needed"
 msgstr ""
 
-#: main.py:140
+#: main.py:141
 msgid "Spindle Stall, reset needed"
 msgstr ""
 
-#: main.py:141
+#: main.py:142
 msgid "SD card read fail, reset needed"
 msgstr ""
 
-#: main.py:143
+#: main.py:144
 msgid "Spindle Alarm, power off/on needed"
 msgstr ""
 
-#: main.py:306
+#: main.py:307
 msgid "Press the Wireless Probe until the green LED blinks quickly."
 msgstr ""
 
-#: main.py:307
+#: main.py:308
 msgid "Pairing Success!"
 msgstr ""
 
-#: main.py:308
+#: main.py:309
 msgid "Pairing Timeout!"
 msgstr ""
 
-#: main.py:476
+#: main.py:477
 msgid "from Headstock"
 msgstr ""
 
-#: main.py:482
+#: main.py:483
 msgid "from Anchor2"
 msgstr ""
 
-#: main.py:484
+#: main.py:485
 msgid "from Anchor1"
 msgstr ""
 
-#: main.py:489
+#: main.py:490
 msgid "Fixed Pos"
 msgstr ""
 
-#: main.py:491
+#: main.py:492
 msgid "from"
 msgstr ""
 
-#: main.py:492 makera.kv:1477
+#: main.py:493 makera.kv:1477
 msgid "Work Origin"
 msgstr ""
 
-#: main.py:492 makera.kv:1483
+#: main.py:493 makera.kv:1483
 msgid "Path Origin"
 msgstr ""
 
-#: main.py:495
+#: main.py:496
 msgid "X Points: "
 msgstr ""
 
-#: main.py:496
+#: main.py:497
 msgid "Y Points: "
 msgstr ""
 
-#: main.py:497
+#: main.py:498
 msgid "Height: "
 msgstr ""
 
-#: main.py:1429 main.py:1457
+#: main.py:1443 main.py:1475
 msgid " New version detected: v"
 msgstr ""
 
-#: main.py:1429 main.py:1457
+#: main.py:1443 main.py:1475
 msgid " Current: v"
 msgstr ""
 
-#: main.py:1432 main.py:1460
+#: main.py:1446 main.py:1478
 msgid " Current version: v"
 msgstr ""
 
-#: main.py:1584
+#: main.py:1462
+msgid "Language setting applied, restart Controller app to take effect !"
+msgstr ""
+
+#: main.py:1602
 msgid "Timeout, Connection lost!"
 msgstr ""
 
-#: main.py:1610
+#: main.py:1628
 msgid "Documents"
 msgstr ""
 
-#: main.py:1612
+#: main.py:1630
 msgid "Downloads"
 msgstr ""
 
-#: main.py:1614
+#: main.py:1632
 msgid "Desktop"
 msgstr ""
 
-#: main.py:1625
+#: main.py:1643
 msgid "Storage"
 msgstr ""
 
-#: main.py:1675 main.py:1719
+#: main.py:1693 main.py:1737
 msgid "Recent Places"
 msgstr ""
 
-#: main.py:1735
+#: main.py:1753
 msgid "Cannot connect, machine is busy or not availiable."
 msgstr ""
 
-#: main.py:1737
+#: main.py:1755
 msgid "No previous machine network address stored."
 msgstr ""
 
-#: main.py:1742
+#: main.py:1760
 msgid "Searching for nearby machines..."
 msgstr ""
 
-#: main.py:1752
+#: main.py:1770
 msgid "None found, enter address manually..."
 msgstr ""
 
-#: main.py:1766
+#: main.py:1784
 msgid "Input machine network address:"
 msgstr ""
 
-#: main.py:1869
+#: main.py:1887
 msgid "Error loading dir"
 msgstr ""
 
-#: main.py:1871
+#: main.py:1889
 msgid "Timeout loading dir"
 msgstr ""
 
-#: main.py:1879
+#: main.py:1897
 msgid "Error deleting"
 msgstr ""
 
-#: main.py:1881
+#: main.py:1899
 msgid "Timeout deleting"
 msgstr ""
 
-#: main.py:1889
+#: main.py:1907
 msgid "Error renaming"
 msgstr ""
 
-#: main.py:1891
+#: main.py:1909
 msgid "Timeout renaming"
 msgstr ""
 
-#: main.py:1899
+#: main.py:1917
 msgid "Error making dir:"
 msgstr ""
 
-#: main.py:1901
+#: main.py:1919
 msgid "Timeout making dir:"
 msgstr ""
 
-#: main.py:1909
+#: main.py:1927
 msgid "Error getting WiFi info!"
 msgstr ""
 
-#: main.py:1911
+#: main.py:1929
 msgid "Timeout getting WiFi info!"
 msgstr ""
 
-#: main.py:1921
+#: main.py:1939
 msgid "Timeout connecting WiFi!"
 msgstr ""
 
-#: main.py:1931
+#: main.py:1949
 msgid "Delete File or Dir"
 msgstr ""
 
-#: main.py:1932
+#: main.py:1950
 msgid "Confirm to delete file or dir"
 msgstr ""
 
-#: main.py:1944
+#: main.py:1962
 msgid "Machine Is Halted: "
 msgstr ""
 
-#: main.py:1946
+#: main.py:1964
 msgid "Machine Is Halted!"
 msgstr ""
 
-#: main.py:1949
+#: main.py:1967
 msgid "Please manually switch off/on the machine!"
 msgstr ""
 
-#: main.py:1952 main.py:1964
+#: main.py:1970 main.py:1982
 msgid "Confirm to reset machine?"
 msgstr ""
 
-#: main.py:1955
+#: main.py:1973
 msgid "Confirm to unlock machine?"
 msgstr ""
 
-#: main.py:1963
+#: main.py:1981
 msgid "Machine Is Sleeping"
 msgstr ""
 
-#: main.py:1978
+#: main.py:1996
 msgid "Changing Tool"
 msgstr ""
 
-#: main.py:1979
+#: main.py:1997
 msgid "Please change to tool: "
 msgstr ""
 
-#: main.py:1979
+#: main.py:1997
 msgid "Then press ' Confirm' or main button to proceed"
 msgstr ""
 
-#: main.py:2009
+#: main.py:2027
 msgid "Change name"
 msgstr ""
 
-#: main.py:2017
+#: main.py:2035
 msgid "Input new folder name:"
 msgstr ""
 
-#: main.py:2025
+#: main.py:2043
 msgid "Input WiFi password of"
 msgstr ""
 
-#: main.py:2037 main.py:2068
+#: main.py:2055 main.py:2086
 msgid "File Already Exists"
 msgstr ""
 
-#: main.py:2038 main.py:2069
+#: main.py:2056 main.py:2087
 msgid "Confirm to overwrite file:"
 msgstr ""
 
-#: main.py:2045
+#: main.py:2063
 msgid "Updating Firmware"
 msgstr ""
 
-#: main.py:2046
+#: main.py:2064
 msgid "Reset the machine when uploading is complete."
 msgstr ""
 
-#: main.py:2060
+#: main.py:2078
 msgid "Loading file"
 msgstr ""
 
-#: main.py:2086
+#: main.py:2104
 msgid "Opening local file"
 msgstr ""
 
-#: main.py:2142
+#: main.py:2160
 msgid ""
 "Error loading machine config setting. Possibly malformed value.\n"
 "Skipping setting key: "
 msgstr ""
 
-#: main.py:2152
+#: main.py:2170
 msgid "Download config file error"
 msgstr ""
 
-#: main.py:2168
+#: main.py:2186
 msgid "Load config..."
 msgstr ""
 
-#: main.py:2168
+#: main.py:2186
 msgid "Checking"
 msgstr ""
 
-#: main.py:2195
+#: main.py:2213
 msgid "Download config file error!"
 msgstr ""
 
-#: main.py:2197
+#: main.py:2215
 msgid "Download file error!"
 msgstr ""
 
-#: main.py:2211
+#: main.py:2229
 msgid "Synchronize version and time..."
 msgstr ""
 
-#: main.py:2218
+#: main.py:2236
 msgid "Open cached file"
 msgstr ""
 
-#: main.py:2228
+#: main.py:2246
 msgid "Downloading is canceled manually."
 msgstr ""
 
-#: main.py:2251
+#: main.py:2269
 msgid "Downloading"
 msgstr ""
 
-#: main.py:2265 main.py:2267
+#: main.py:2283 main.py:2285
 msgid "WiFi: Searching for network..."
 msgstr ""
 
-#: main.py:2292
+#: main.py:2310
 msgid "WiFi: Connected"
 msgstr ""
 
-#: main.py:2292
+#: main.py:2310
 msgid "WiFi: Not Connected"
 msgstr ""
 
-#: main.py:2295
+#: main.py:2313
 msgid "Close Connection"
 msgstr ""
 
-#: main.py:2336
+#: main.py:2354
 msgid "Can not load coordinate value:"
 msgstr ""
 
-#: main.py:2343
+#: main.py:2361
 msgid "Can not load laser offset value:"
 msgstr ""
 
-#: main.py:2404
+#: main.py:2422
 msgid "Connecting to"
 msgstr ""
 
-#: main.py:2525
+#: main.py:2543
 msgid "Uploading"
 msgstr ""
 
-#: main.py:2547
+#: main.py:2565
 msgid "Uploading is canceled manually."
 msgstr ""
 
-#: main.py:2556
+#: main.py:2574
 msgid "Upload file error!"
 msgstr ""
 
-#: main.py:2597
+#: main.py:2615
 msgid "Decompressing"
 msgstr ""
 
-#: main.py:2609
+#: main.py:2627
 msgid "Update Finished"
 msgstr ""
 
-#: main.py:2610
+#: main.py:2628
 msgid "Confirm to reset the machine?"
 msgstr ""
 
-#: main.py:2732 makera.kv:3081
+#: main.py:2750 makera.kv:3081
 msgid "disconnect"
 msgstr ""
 
-#: main.py:2864 main.py:2883
+#: main.py:2882 main.py:2901
 msgid "Laser"
 msgstr ""
 
-#: main.py:2871
+#: main.py:2889
 msgid "None"
 msgstr ""
 
-#: main.py:2881 makera.kv:2941
+#: main.py:2899 makera.kv:2941
 msgid "Probe"
 msgstr ""
 
-#: main.py:2961
+#: main.py:2979
 msgid " No Remote File Selected"
 msgstr ""
 
-#: main.py:3226 main.py:3237
+#: main.py:3244 main.py:3255
 msgid "Load config error, Key:"
 msgstr ""
 
-#: main.py:3307
+#: main.py:3325
 msgid "Settings applied, need reset to take effect !"
 msgstr ""
 
-#: main.py:3312
+#: main.py:3330
 msgid "Restore Settings"
 msgstr ""
 
-#: main.py:3313
+#: main.py:3331
 msgid "Confirm to restore settings from default ?"
 msgstr ""
 
-#: main.py:3327
+#: main.py:3345
 msgid "Save As Default"
 msgstr ""
 
-#: main.py:3328
+#: main.py:3346
 msgid "Confirm to save current settings as default ?"
 msgstr ""
 
-#: main.py:3336
+#: main.py:3354
 msgid "Entering Laser Mode"
 msgstr ""
 
-#: main.py:3338
+#: main.py:3356
 msgid ""
 "You are about to enable laser mode. \n"
 "\n"
@@ -485,15 +489,15 @@ msgid ""
 "Are you read to proceed ?"
 msgstr ""
 
-#: main.py:3571
+#: main.py:3589
 msgid "Opening file error:"
 msgstr ""
 
-#: main.py:3571
+#: main.py:3589
 msgid "Please make sure the GCode file is valid"
 msgstr ""
 
-#: main.py:3654
+#: main.py:3672
 msgid "Carvera Controller Community"
 msgstr ""
 

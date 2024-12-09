@@ -1458,6 +1458,10 @@ class Makera(RelativeLayout):
                     Config.set('carvera', 'language', lang_key)
                     Config.write()
         self.language_popup.dismiss()
+        self.config_popup.btn_apply.disabled = True
+        self.message_popup.lb_content.text = tr._('Language setting applied, restart Controller app to take effect !')
+        self.message_popup.open()
+
 
     def check_ctl_version(self, *args):
         self.upgrade_popup.ctl_upd_text.text = self.ctl_upd_text
@@ -3748,7 +3752,8 @@ def load_constants():
 
     LANGS = {
         'en':  'English',
-        'zh-CN': '中文简体(Simplified Chinese)',
+        'zh-CN': '中文简体 (Simplified Chinese)',
+        'de-CH': 'Deutsch (German)',
     }
 
     SHORT_LOAD_TIMEOUT = 3  # s
