@@ -27,7 +27,7 @@ scripts/versionfile.txt
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
-*.spec
+/scripts/*.spec
 
 # Installer logs
 pip-log.txt
@@ -85,3 +85,6 @@ xcuserdata
 project.pbxproj*backup
 packaging_assets/ios/dist
 packaging_assets/ios/carveracontroller-ios/carveracontrollerpkg/*
+
+.buildozer/
+bin/

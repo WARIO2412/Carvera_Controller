@@ -20,7 +20,7 @@ import datetime
 import threading
 import logging
 
-from carveracontroller.addons.probing.ProbingPopup import ProbingPopup
+from .addons.probing.ProbingPopup import ProbingPopup
 class Lang(Observable):
     observers = []
     lang = None
