@@ -4076,6 +4076,9 @@ class MakeraApp(App):
         self.icon = os.path.join(os.path.dirname(__file__), 'icon.png')
 
         return Makera(ctl_version=__version__) 
+    
+    def on_start(self):
+        Window.update_viewport()
 
 def load_app_configs():
     if Config.has_option('carvera', 'ui_density_override') and Config.get('carvera', 'ui_density_override') == "1":
