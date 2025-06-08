@@ -197,9 +197,9 @@ def restore_codegen_files(root_path, project_path):
         source_path = Path(backup_dir / file["source_name"])
         if source_path.exists():
             shutil.copy2(source_path, file["restore_path"])
-            print(f"Restored {file["source_name"]}")
+            print(f"Restored {file['source_name']}")
         else:
-            print(f"Backup not found: {file["source_name"]}")
+            print(f"Backup not found: {file['source_name']}")
 
 
 def version_type(version_string):
