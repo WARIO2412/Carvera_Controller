@@ -5,6 +5,28 @@ import struct
 # import os
 # os.environ["KIVY_METRICS_DENSITY"] = '1'
 
+def is_android():
+    return 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ or 'ANDROID_APP_PATH' in os.environ
+
+if is_android():
+    try:
+        from jnius import autoclass
+
+        DisplayMetrics = autoclass('android.util.DisplayMetrics')
+        WindowManager = autoclass('android.view.WindowManager')
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+
+        activity = PythonActivity.mActivity
+        metrics = DisplayMetrics()
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics)
+        screen_width_density  = int(metrics.widthPixels  * 10 / 960) / 10
+        screen_height_density = int(metrics.heightPixels * 10 / 550) / 10
+
+        os.environ["KIVY_METRICS_DENSITY"] = str(min(screen_width_density, screen_height_density))
+
+    except ImportError:
+        print("Pyjnius Import Fail.")
+
 import gettext
 import locale
 from kivy.lang import Observable
@@ -229,9 +251,6 @@ def init_lang():
             pass
 
     return default_lang
-
-def is_android():
-    return 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ or 'ANDROID_APP_PATH' in os.environ
 
 def app_base_path():
     """
@@ -4056,27 +4075,7 @@ class MakeraApp(App):
         self.title = tr._('Carvera Controller Community') + ' v' + __version__
         self.icon = os.path.join(os.path.dirname(__file__), 'icon.png')
 
-        return Makera(ctl_version=__version__)
-
-def android_tweaks():
-    """Android specific app changes"""
-    try:
-        from jnius import autoclass
-
-        DisplayMetrics = autoclass('android.util.DisplayMetrics')
-        WindowManager = autoclass('android.view.WindowManager')
-        PythonActivity = autoclass('org.kivy.android.PythonActivity')
-
-        activity = PythonActivity.mActivity
-        metrics = DisplayMetrics()
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics)
-        screen_width_density  = int(metrics.widthPixels  * 10 / 960) / 10
-        screen_height_density = int(metrics.heightPixels * 10 / 550) / 10
-
-        os.environ["KIVY_METRICS_DENSITY"] = str(min(screen_width_density, screen_height_density))
-
-    except ImportError:
-        print("Pyjnius Import Fail.")
+        return Makera(ctl_version=__version__) 
 
 def load_app_configs():
     if Config.has_option('carvera', 'ui_density_override') and Config.get('carvera', 'ui_density_override') == "1":
@@ -4163,8 +4162,6 @@ def load_constants():
 
 
 def main():
-    if is_android():
-        android_tweaks()
 
     # load the global constants
     load_constants()
