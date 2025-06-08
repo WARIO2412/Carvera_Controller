@@ -1,8 +1,8 @@
-name: release
+name: dev release
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - develop
 jobs:
   build-windows-artifacts:
     name: build-windows-${{ matrix.platform }}
@@ -44,7 +44,10 @@ jobs:
         powershell.exe mesa\\systemwidedeploy.cmd 1
 
     - name: Build release
-      run: poetry run python scripts/build.py --os windows --version ${{ github.ref_name }}
+      shell: pwsh
+      run: |
+        $date = Get-Date -Format "yyyy.M.d"
+        poetry run python scripts/build.py --os windows --version $date
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -80,12 +83,14 @@ jobs:
       uses: ./.github/actions/bootstrap-poetry
       with:
         os: macos
-    
+  
     - name: Install create-dmg
       run: brew install create-dmg
 
     - name: Build release
-      run: poetry run python scripts/build.py --os macos --version ${{ github.ref_name }}
+      run: |
+        DATE=$(date +'%Y.%m.%d')
+        poetry run python scripts/build.py --os macos --version "$DATE"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -126,7 +131,9 @@ jobs:
       run: sudo apt-get install -y mtdev-tools gettext
 
     - name: Build release
-      run: xvfb-run poetry run python scripts/build.py --os linux --version ${{ github.ref_name }}
+      run: |
+        DATE=$(date +'%Y.%m.%d')
+        xvfb-run poetry run python scripts/build.py --os linux --version "$DATE"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -134,36 +141,6 @@ jobs:
         name: linux-assets-${{ matrix.platform }}
         path: ${{ github.workspace }}/dist/carveracontroller-community-*.appimage
         retention-days: 2
-
-  build-pypi-artifacts:
-    name: build-python
-    runs-on: ubuntu-24.04
-    permissions:
-      id-token: write
-
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # all history is required for the dynamic versioning plugin
-
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.12
-
-    - name: Install poetry and dependencies
-      uses: ./.github/actions/bootstrap-poetry
-      with:
-        os: linux
-
-    - name: Build release
-      run: poetry run python scripts/build.py --os pypi --version ${{ github.ref_name }}
-
-    - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
 
   publish-release:
     needs: [ build-windows-artifacts, build-macos-artifacts, build-linux-artifacts ]
@@ -173,8 +150,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get dev release info (JSON)
+        id: get_release
+        run: |
+          release=$(gh release view dev --json assets)
+          echo "$release"
+          asset_names=$(echo "$release" | jq -r '.assets[].name' | paste -sd ',' -)
+          echo "asset_names=$asset_names" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Delete all assets from dev release
+        if: steps.get_release.outputs.asset_names != ''
+        run: |
+          IFS=',' read -ra NAMES <<< "$asset_names"
+          for name in "${NAMES[@]}"; do
+            echo "Deleting asset name: $name"
+            gh release delete-asset dev $name -y
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
+      
+      - name: Force move 'dev' tag to latest commit on develop
+        run: |
+          git tag -f dev
+          git push origin dev --force
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
@@ -183,3 +186,4 @@ jobs:
             windows-assets-*/carveracontroller-community-*-windows-x64.exe
             macos-assets-*/carveracontroller-community-*.dmg
             linux-assets-*/carveracontroller-community-*.appimage
+          tag_name: dev
