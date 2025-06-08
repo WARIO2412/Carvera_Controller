@@ -28,33 +28,30 @@ if kivy_platform == 'android':
     from jnius import autoclass
     Intent = autoclass('android.content.Intent')
     Settings = autoclass('android.provider.Settings')
+    Environment = autoclass('android.os.Environment')
+
+def has_all_files_access():
+    if kivy_platform == 'android':
+        try:
+            return Environment.isExternalStorageManager()
+        except Exception as e:
+            print(f"Error checking storage manager status: {e}")
+            return False
+    return True
 
 def request_android_permissions():
     if kivy_platform == 'android':
         try:
-            # Request basic storage permissions
-            request_permissions([
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE,
-            ])
+            # Check if we already have all files access
+            if has_all_files_access():
+                print("Already have all files access permission")
+                return
+
             # Request all files access permission
             intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
             mActivity.startActivity(intent)
         except Exception as e:
             print(f"Error requesting permissions: {e}")
-
-def get_android_downloads_path():
-    if kivy_platform == 'android':
-        try:
-            # Get the primary external storage path
-            storage_path = primary_external_storage_path()
-            # Append Downloads directory
-            downloads_path = os.path.join(storage_path, 'Download')
-            return downloads_path
-        except Exception as e:
-            print(f"Error getting downloads path: {e}")
-            return None
-    return None
 
 from .addons.probing.ProbingPopup import ProbingPopup
 class Lang(Observable):
@@ -1904,12 +1901,6 @@ class Makera(RelativeLayout):
             try:
                 # Request permissions first
                 request_android_permissions()
-                
-                # Get downloads path
-                downloads_path = get_android_downloads_path()
-                if downloads_path and os.path.exists(downloads_path):
-                    self.common_local_dir_list.append(
-                        {'name': tr._('Downloads'), 'path': downloads_path, 'icon': 'data/folder-downloads.png'})
                 
                 # Add primary storage path
                 android_storage_path = primary_external_storage_path()
