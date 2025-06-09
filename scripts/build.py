@@ -7,7 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
-import os
+import os as os_module
 import platform
 import toml
 from glob import glob
@@ -209,6 +209,8 @@ def version_type(version_string):
 
 
 def rename_release_file(os_name, package_version):
+    print("CWD", os_module.getcwd())
+    print("List dist", os_module.listdir("./dist"))
     if os_name == "macos":
         arch = platform.machine()
         if arch == "arm64":
@@ -234,7 +236,7 @@ def rename_release_file(os_name, package_version):
         file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
         src = f"./dist/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
         dst = f"./dist/{file_name}"
-
+    print("List dist", os_module.listdir("./dist"))
     shutil.move(src, dst)
 
 
@@ -384,7 +386,7 @@ def main():
         if result.returncode != 0:
             logger.error("Error setting up Android build environment")
             sys.exit(result.returncode)
-        
+        print("CWD", os_module.getcwd())
         # Then run the actual build
         logger.info("Building Android APK...")
         build_command = "buildozer -v android debug"
@@ -392,6 +394,7 @@ def main():
         if result.returncode != 0:
             logger.error("Error building Android APK")
             sys.exit(result.returncode)
+        print("CWD", os_module.getcwd())
 
     ######### Pre PyInstaller tweaks #########
     if os == "windows":
