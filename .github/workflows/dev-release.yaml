@@ -141,9 +141,52 @@ jobs:
         name: linux-assets-${{ matrix.platform }}
         path: ${{ github.workspace }}/dist/carveracontroller-community-*.appimage
         retention-days: 2
+  
+  build-android-artifacts:
+    name: build-android-${{ matrix.platform }}
+    runs-on: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ x64, aarch64 ]
+        include:
+          - platform: x64
+            image: ubuntu-22.04
+          - platform: aarch64
+            image: ubuntu-24.04-arm
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install poetry and dependencies
+      uses: ./.github/actions/bootstrap-poetry
+      with:
+        os: linux
+    
+    - name: Install MTDev
+      run: sudo apt-get install -y mtdev-tools gettext
+
+    - name: Build release
+      run: |
+        DATE=$(date +'%Y.%m.%d')
+        xvfb-run poetry run python scripts/build.py --os android --version "0.1.0"
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-assets-${{ matrix.platform }}
+        path: ${{ github.workspace }}/dist/carveracontroller-community-*.apk
+        retention-days: 2
 
   publish-release:
-    needs: [ build-windows-artifacts, build-macos-artifacts, build-linux-artifacts ]
+    needs: [ build-windows-artifacts, build-macos-artifacts, build-linux-artifacts, build-android-artifacts ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -186,4 +229,5 @@ jobs:
             windows-assets-*/carveracontroller-community-*-windows-x64.exe
             macos-assets-*/carveracontroller-community-*.dmg
             linux-assets-*/carveracontroller-community-*.appimage
+            android-assets-*/carveracontroller-community-*.apk
           tag_name: dev

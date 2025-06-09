@@ -349,12 +349,22 @@ def main():
         # For Android we need some special handling as it is not supported by pyinstaller
         # Update version in buildozer.spec
         update_buildozer_version(package_version)
-        # Execute the build_android.sh script
-        command = f"buildozer -v android debug"
-        result = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
-        if result.stderr:
-            logger.error(f"Error from build_android.sh: {result.stderr}")
-        logger.info(f"Stdout from build_android.sh: {result.stdout}")
+        
+        # First ensure buildozer is installed and environment is set up
+        setup_command = f"{BUILD_PATH}/build_android.sh"
+        logger.info("Setting up Android build environment...")
+        result = subprocess.run(setup_command, shell=True)
+        if result.returncode != 0:
+            logger.error("Error setting up Android build environment")
+            sys.exit(result.returncode)
+        
+        # Then run the actual build
+        logger.info("Building Android APK...")
+        build_command = "buildozer -v android debug"
+        result = subprocess.run(build_command, shell=True)
+        if result.returncode != 0:
+            logger.error("Error building Android APK")
+            sys.exit(result.returncode)
 
     ######### Pre PyInstaller tweaks #########
     if os == "windows":
