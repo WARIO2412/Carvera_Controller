@@ -232,7 +232,7 @@ def rename_release_file(os_name, package_version):
     elif os_name == "android":
         arch_name = "armeabi-v7a"
         file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
-        src = f"./bin/carveracontroller-community-{package_version}-{arch_name}-debug.apk"
+        src = f"./bin/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
         dst = f"./dist/{file_name}"
 
     shutil.move(src, dst)

@@ -4,7 +4,7 @@
 title = Carvera Community Controller
 
 # (str) Package name
-package.name = carveracontroller-community
+package.name = carveracontrollercommunity
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.carveracommunity
