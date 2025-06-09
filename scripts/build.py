@@ -209,8 +209,6 @@ def version_type(version_string):
 
 
 def rename_release_file(os_name, package_version):
-    print("CWD", os.getcwd())
-    print("List dist", os.listdir("./dist"))
     if os_name == "macos":
         arch = platform.machine()
         if arch == "arm64":
@@ -236,12 +234,7 @@ def rename_release_file(os_name, package_version):
         file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
         src = f"./dist/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
         dst = f"./dist/{file_name}"
-        print("src", src)
-        print("dst", dst)
-        print("Path exists", os.path.exists(src))
-        print("Path exists", os.path.exists(dst))
-    print("List dist", os.listdir("."))
-    print(shutil.move(src, dst))
+    shutil.move(src, dst)
 
 
 def create_macos_dmg():
@@ -315,7 +308,6 @@ def update_buildozer_automation() -> None:
 
 
 def main():
-    print("List root", os.listdir("."))
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--os",
@@ -391,7 +383,6 @@ def main():
         if result.returncode != 0:
             logger.error("Error setting up Android build environment")
             sys.exit(result.returncode)
-        print("CWD", os.getcwd())
         # Then run the actual build
         logger.info("Building Android APK...")
         build_command = "buildozer -v android debug"
@@ -399,7 +390,6 @@ def main():
         if result.returncode != 0:
             logger.error("Error building Android APK")
             sys.exit(result.returncode)
-        print("CWD", os.getcwd())
 
     ######### Pre PyInstaller tweaks #########
     if os_name == "windows":
