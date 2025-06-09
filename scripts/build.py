@@ -7,7 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
-import os as os_module
+import os
 import platform
 import toml
 from glob import glob
@@ -209,8 +209,8 @@ def version_type(version_string):
 
 
 def rename_release_file(os_name, package_version):
-    print("CWD", os_module.getcwd())
-    print("List dist", os_module.listdir("./dist"))
+    print("CWD", os.getcwd())
+    print("List dist", os.listdir("./dist"))
     if os_name == "macos":
         arch = platform.machine()
         if arch == "arm64":
@@ -236,8 +236,12 @@ def rename_release_file(os_name, package_version):
         file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
         src = f"./dist/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
         dst = f"./dist/{file_name}"
-    print("List dist", os_module.listdir("./dist"))
-    shutil.move(src, dst)
+        print("src", src)
+        print("dst", dst)
+        print("Path exists", os.path.exists(src))
+        print("Path exists", os.path.exists(dst))
+    print("List dist", os.listdir("."))
+    print(shutil.move(src, dst))
 
 
 def create_macos_dmg():
@@ -311,6 +315,7 @@ def update_buildozer_automation() -> None:
 
 
 def main():
+    print("List root", os.listdir("."))
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--os",
@@ -339,7 +344,7 @@ def main():
     )
 
     args = parser.parse_args()
-    os = args.os
+    os_name = args.os
     appimage = args.appimage
     package_version = args.version
     output_filename = PACKAGE_NAME
@@ -357,11 +362,11 @@ def main():
     compile_mo()
 
     ######### Non-PyInstaller builds #########
-    if os == "pypi":
+    if os_name == "pypi":
         logger.info("Performing pypi build via poetry")
         result = subprocess.run("poetry build", shell=True, capture_output=True, text=True, check=True)
 
-    if os == "ios":
+    if os_name == "ios":
         # For iOS we need some special handling as it is not supported by pyinstaller
         # Execute the build_ios.sh script
         command = f"{BUILD_PATH}/build_ios.sh {package_version}"
@@ -370,7 +375,7 @@ def main():
             logger.error(f"Error from build_ios.sh: {result.stderr}")
         logger.info(f"Stdout from build_ios.sh: {result.stdout}")
 
-    if os == "android":
+    if os_name == "android":
         # For Android we need some special handling as it is not supported by pyinstaller
         # Update version in buildozer.spec
         update_buildozer_version(package_version)
@@ -386,7 +391,7 @@ def main():
         if result.returncode != 0:
             logger.error("Error setting up Android build environment")
             sys.exit(result.returncode)
-        print("CWD", os_module.getcwd())
+        print("CWD", os.getcwd())
         # Then run the actual build
         logger.info("Building Android APK...")
         build_command = "buildozer -v android debug"
@@ -394,10 +399,10 @@ def main():
         if result.returncode != 0:
             logger.error("Error building Android APK")
             sys.exit(result.returncode)
-        print("CWD", os_module.getcwd())
+        print("CWD", os.getcwd())
 
     ######### Pre PyInstaller tweaks #########
-    if os == "windows":
+    if os_name == "windows":
         # Windows needs a versionfile created for metadata in the binary artifact
         versionfile_path = generate_versionfile(
             package_version=package_version,
@@ -405,16 +410,16 @@ def main():
         )
 
     ######### Run PyInstaller for all os expcept those that don't use it #########
-    if os not in ("ios", "pypi", "android"):
+    if os_name not in ("ios", "pypi", "android"):
         build_args = build_pyinstaller_args(
-            os=os,
+            os=os_name,
             output_filename=output_filename,
             versionfile_path=versionfile_path,
         )
         run_pyinstaller(build_args=build_args)
 
     ######### Post PyInstaller tweaks #########
-    if os == "linux":
+    if os_name == "linux":
         # Need to remove some libs for opinionated backwards compatibility
         # https://github.com/pyinstaller/pyinstaller/issues/6993 
         frozen_dir = f"dist/{PACKAGE_NAME}/_internal"
@@ -423,7 +428,7 @@ def main():
         if appimage:
             run_appimage_builder(package_version)
     
-    if os == "macos":
+    if os_name == "macos":
         # Need to manually revise the version string due to
         # https://github.com/pyinstaller/pyinstaller/issues/6943
         import PyInstaller.utils.osx as osxutils
@@ -432,7 +437,7 @@ def main():
         create_macos_dmg()
     
     #logger.info("Renaming artifacts to have version number and platform in filename")
-    rename_release_file(os, package_version)
+    rename_release_file(os_name, package_version)
 
     logger.info("Restoring files modified by codegen")
     restore_codegen_files(ROOT_PATH, PROJECT_PATH)
