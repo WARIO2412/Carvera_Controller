@@ -170,6 +170,13 @@ jobs:
     
     - name: Install MTDev
       run: sudo apt-get install -y mtdev-tools gettext
+    
+    # Set up Java 17 required by Gradle
+    - name: Setup Java 17 required by Gradle
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'  # or 'zulu', 'liberica', etc.
+        java-version: '17'
 
     - name: Build release
       run: |
