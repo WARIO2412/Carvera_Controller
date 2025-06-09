@@ -229,6 +229,11 @@ def rename_release_file(os_name, package_version):
         file_name = f"carveracontroller-community-{package_version}-{arch_name}.appimage"
         src = "./dist/carveracontroller-community.AppImage"
         dst = f"./dist/{file_name}"
+    elif os_name == "android":
+        arch_name = "armeabi-v7a"
+        file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
+        src = f"./bin/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
+        dst = f"./dist/{file_name}"
 
     shutil.move(src, dst)
 
@@ -269,16 +274,33 @@ def create_macos_dmg():
         raise RuntimeError("create-dmg failed")
 
 
+def update_buildozer_version(package_version: str) -> None:
+    """Update the version in buildozer.spec file."""
+    logger.info("Updating version in buildozer.spec")
+    buildozer_spec_path = ROOT_PATH.joinpath("buildozer.spec")
+    
+    with open(buildozer_spec_path, 'r') as file:
+        lines = file.readlines()
+    
+    for i, line in enumerate(lines):
+        if line.startswith('version = '):
+            lines[i] = f'version = {package_version}\n'
+            break
+    
+    with open(buildozer_spec_path, 'w') as file:
+        file.writelines(lines)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--os",
         metavar="os",
         required=True,
-        choices=["windows", "macos", "linux", "ios", "pypi"],
+        choices=["windows", "macos", "linux", "ios", "pypi", "android"],
         type=str,
         default="linux",
-        help="Choices are: windows, macos, pypi or linux. Default is linux."
+        help="Choices are: windows, macos, pypi, android or linux. Default is linux."
     )
 
     parser.add_argument('--no-appimage', dest='appimage', action='store_false')
@@ -323,6 +345,17 @@ def main():
             logger.error(f"Error from build_ios.sh: {result.stderr}")
         logger.info(f"Stdout from build_ios.sh: {result.stdout}")
 
+    if os == "android":
+        # For Android we need some special handling as it is not supported by pyinstaller
+        # Update version in buildozer.spec
+        update_buildozer_version(package_version)
+        # Execute the build_android.sh script
+        command = f"buildozer -v android debug"
+        result = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
+        if result.stderr:
+            logger.error(f"Error from build_android.sh: {result.stderr}")
+        logger.info(f"Stdout from build_android.sh: {result.stdout}")
+
     ######### Pre PyInstaller tweaks #########
     if os == "windows":
         # Windows needs a versionfile created for metadata in the binary artifact
@@ -332,7 +365,7 @@ def main():
         )
 
     ######### Run PyInstaller for all os expcept those that don't use it #########
-    if os not in ("ios", "pypi"):
+    if os not in ("ios", "pypi", "android"):
         build_args = build_pyinstaller_args(
             os=os,
             output_filename=output_filename,
