@@ -203,9 +203,20 @@ def restore_codegen_files(root_path, project_path):
 
 
 def version_type(version_string):
-    if not re.match(r'^\d+\.\d+\.\d+$', version_string):
-        raise argparse.ArgumentTypeError("Must be in X.Y.Z format (e.g., 1.2.3)")
-    return version_string
+    if not re.match(r'^v?\d+\.\d+\.\d+$', version_string):
+        raise argparse.ArgumentTypeError("Must be in X.Y.Z format (e.g., 1.2.3 or v1.2.3)")
+    
+    # Remove 'v' prefix if present
+    version_string = version_string.lstrip('v')
+    
+    # Split version into parts
+    parts = version_string.split('.')
+    
+    # If first part is 4 digits, take last 2 digits
+    if len(parts[0]) == 4:
+        parts[0] = parts[0][-2:]
+    
+    return '.'.join(parts)
 
 
 def rename_release_file(os_name, package_version):
@@ -370,6 +381,7 @@ def main():
     if os_name == "android":
         # For Android we need some special handling as it is not supported by pyinstaller
         # Update version in buildozer.spec
+        
         update_buildozer_version(package_version)
         
         # Update buildozer.spec for automation if flag is set

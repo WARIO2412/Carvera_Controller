@@ -199,7 +199,7 @@ jobs:
     - name: Build release
       run: |
         DATE=$(date +'%Y.%m.%d')
-        xvfb-run poetry run python scripts/build.py --os android --version "0.1.0" --automation
+        xvfb-run poetry run python scripts/build.py --os android --version "$DATE" --automation
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
