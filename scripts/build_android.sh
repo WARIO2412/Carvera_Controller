@@ -51,6 +51,17 @@ sudo apt install -y \
     libffi-dev \
     libssl-dev
 
+# Set JAVA_HOME
+print_status "Setting JAVA_HOME environment variable"
+JAVA_HOME=$(update-alternatives --list java | grep "java-17" | head -n 1 | sed 's/\/bin\/java$//')
+if [ -z "$JAVA_HOME" ]; then
+    echo "Error: Could not find Java 17 installation"
+    exit 1
+fi
+echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc
+export JAVA_HOME=$JAVA_HOME
+print_status "JAVA_HOME set to: $JAVA_HOME"
+
 # Install Python dependencies
 print_status "Checking Python dependencies"
 
