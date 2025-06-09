@@ -392,6 +392,18 @@ def main():
         if result.returncode != 0:
             logger.error("Error building Android APK")
             sys.exit(result.returncode)
+        try:
+            # List contents of bin directory to help debug APK location
+            bin_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "bin")
+            logger.info(f"Contents of {bin_path}:")
+            if os.path.exists(bin_path):
+                for item in os.listdir(bin_path):
+                    logger.info(f"  {item}")
+            else:
+                logger.info("  bin directory does not exist")
+        except Exception as e:
+            logger.warning(f"Failed to list bin directory contents: {e}")
+            # Continue execution even if listing fails
 
     ######### Pre PyInstaller tweaks #########
     if os == "windows":
@@ -428,8 +440,8 @@ def main():
         osxutils.sign_binary(f"dist/{PACKAGE_NAME}.app", deep=True)
         create_macos_dmg()
     
-    logger.info("Renaming artifacts to have version number and platform in filename")
-    rename_release_file(os, package_version)
+    #logger.info("Renaming artifacts to have version number and platform in filename")
+    #rename_release_file(os, package_version)
 
     logger.info("Restoring files modified by codegen")
     restore_codegen_files(ROOT_PATH, PROJECT_PATH)
