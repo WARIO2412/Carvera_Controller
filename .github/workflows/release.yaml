@@ -165,6 +165,72 @@ jobs:
     - name: Publish package to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
 
+  build-android-artifacts:
+    name: build-android-armeabi-v7a
+    runs-on: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ x64 ]
+        include:
+          - platform: x64
+            image: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v4
+
+    # Used to cache dependencies with a timeout
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+      shell: bash
+
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      with:
+        path: .buildozer_global
+        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+
+    - uses: actions/cache@v4
+      with:
+        path: .buildozer
+        key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install poetry and dependencies
+      uses: ./.github/actions/bootstrap-poetry
+      with:
+        os: linux
+    
+    - name: Install MTDev
+      run: sudo apt-get install -y mtdev-tools gettext
+    
+    # Set up Java 17 required by Gradle
+    - name: Setup Java 17 required by Gradle
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'  # or 'zulu', 'liberica', etc.
+        java-version: '17'
+
+    - name: Build release
+      run: |
+        DATE=$(date +'%Y.%m.%d')
+        xvfb-run poetry run python scripts/build.py --os android --version ${{ github.ref_name }} --automation
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-assets-${{ matrix.platform }}
+        path: ${{ github.workspace }}/dist/carveracontroller-community-*.apk
+        retention-days: 2
+
   publish-release:
     needs: [ build-windows-artifacts, build-macos-artifacts, build-linux-artifacts ]
     runs-on: ubuntu-latest
@@ -183,3 +249,4 @@ jobs:
             windows-assets-*/carveracontroller-community-*-windows-x64.exe
             macos-assets-*/carveracontroller-community-*.dmg
             linux-assets-*/carveracontroller-community-*.appimage
+            android-assets-*/carveracontroller-community-*.apk
