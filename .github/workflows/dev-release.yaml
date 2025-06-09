@@ -148,7 +148,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ x64, aarch64 ]
+        platform: [ x64 ]
         include:
           - platform: x64
             image: ubuntu-22.04
