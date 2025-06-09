@@ -1,3 +1,17 @@
+[unreleased]
+- Enhancement: Initial support for rotated WCS in visualizations
+- Change: Minimum Python version increased to 3.9
+- Change: Controller no longer warnings about missing config key values in MDI because it's assumed that firmware defaults are used instead
+- Enhancement: Controller support for updating setting definition if machine model is CA1 (via config_ca1_diff.json)
+- Change: Better wording on the xyz probe screen about block thickness
+- Enhancement: Added Ext Control switch to centre control panel
+
+[0.8.2]
+- Fix: Linux ARM64 appimage builds
+- Change: Minimum Linux X64 appimage build requires running a Linux distribution with Glibc 2.35 or above (eg. Ubuntu 22.04 or higher)
+- Fix: Show all .bin files as possible options during firmware upload
+- Fix: Fix wrong Z calibration position when running margin command on CA1 when there is high network latency
+
 [0.8.1]
 - Fix: Windows Builds in CI
 

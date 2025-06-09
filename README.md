@@ -2,6 +2,30 @@
 
 Community developed version of the Makera Carvera Controller software.
 
+## Why use the Community Controller?
+
+The Community developed version of the Carvera Controller has a number of benefits and fixes above and beyond the Makera software.
+See the [CHANGELOG](CHANGELOG.md) and [screenshots](docs/screenshots/) for more details.
+* **3-axis** and advanced **probing** UI screens for various geometries (**corners**, **axis**, **bore/pocket**, **angles**) for use with a [true 3D touch probe](https://www.instructables.com/Carvera-Touch-Probe-Modifications/) (not the included XYZ probe block)
+* Options to **reduce** the **autolevel** probe **area** to avoid probing obstacles
+* **Tooltip support** for user guidance with over 110 tips and counting
+* **Background images** for bolt hole positions in probe/start screens; users can add their own too
+* Support for setting/changing to **custom tool numbers** beyond 1-6
+* Keyboard button based **jog movement** controls
+* **No dial-home** back to Makera
+* **Single portable binary** for Windows and Linux
+* **Laser Safety** prompt to **remind** operators to put on **safety glasses**
+* **Multiple developers** with their own **Carvera** machines _"drinking their own [software] champagne"_ daily and working to improve the machine's capabilities.
+* Various **Quality-of-life** improvements:
+   * **Controller config settings** (UI Density, screensaver disable, Allow MDI while machine running)
+   * Enclosure **light switch toggle** in the center control panel
+   * Machine **reconnect** functionality with stored last used **machine network address**
+   * **Collet Clamp/Unclamp** buttons in Tool Changer menu for the original Carvera
+   * Better file browser **upload-and-select** workflow
+   * **Previous** file browsing location is **reopened** and **previously** used locations stored to **quick access list**
+   * **Greater speed/feed** override scaling range from **10%** and up to **300%**
+
+
 ## Supported OS
 
 The Controller software works on the following systems:
@@ -9,7 +33,8 @@ The Controller software works on the following systems:
 - Windows 7 x64 or newer
 - MacOS using Intel CPUs running Ventura (13) or above
 - MacOS using Apple Silicon CPUs running Sonoma (14) or above
-- Linux using x64 CPUs running a Linux distribution with Glibc 2.31 or above (eg. Ubuntu 20.04 or higher)
+- Linux using x64 CPUs running a Linux distribution with Glibc 2.35 or above (eg. Ubuntu 22.04 or higher)
+- Linux using aarch64 CPUs (eg Raspberyy Pi 3+) running a Linux distribution with Glibc 2.39 or above (eg. Ubuntu 24.04 or higher)
 - Apple iPad with iOS 17.6 or higher
 - Other systems might be work via the Python Package, see below for more details.
 
@@ -21,6 +46,7 @@ See the assets section of [latest release](https://github.com/carvera-community/
 - carveracontroller-community-\<version\>-Intel.dmg - MacOS with Intel CPU
 - carveracontroller-community-\<version\>-AppleSilicon.dmg - MacOS with Apple CPU (M1 etc)
 - carveracontroller-community-\<version\>-x86_64.appimage - Linux AppImage for x64 systems
+- carveracontroller-community-\<version\>-aarch64.appimage - Linux AppImage for aarch64 systems
 
 ### Usage: Linux App Images
 
@@ -60,7 +86,7 @@ To contribute to this project or set up a local development environment, follow 
 - [Poetry](https://python-poetry.org/) is required for dependency management. Poetry simplifies packaging and simplifies the management of Python dependencies.
 - One of the python dependencies [QuickLZ](https://pypi.org/project/pyquicklz/) will be compiled by Poetry when installed. Ensure that you have a compiler that Poetry/Pip can use and the Pythong headers. On a debian based Linux system this can be accomplished with `sudo apt-get install python3-dev build essential`. On Windows installation of (just) the Visual C++ 14.x compiler is required, this can be accomplished with [MSBuild tools package](https://aka.ms/vs/17/release/vs_BuildTools.exe).
 - [Squashfs-tools](https://github.com/plougher/squashfs-tools) is required if building Linux AppImages. On Debian based systems it's provided by the package `squashfs-tools`. This is only required if packaging for linux.
-- [gettext](https://www.gnu.org/software/gettext/) is required for language file generation. [Gnuwin32](https://gnuwin32.sourceforge.net/packages/gettext.htm) project has a version for Windows
+- [gettext](https://www.gnu.org/software/gettext/) is required for language file generation. [gettext-iconv-windows](https://mlocati.github.io/articles/gettext-iconv-windows.html) project has a version with Windows packages.
 - For building iOS app, you need a working XCode installation as well as the build tool that can be installed with `brew install autoconf automake libtool pkg-config`
 
 ### Installing Poetry
@@ -69,6 +95,12 @@ Follow the official installation instructions to install Poetry. The simplest me
 
 ```bash
 curl -sSL https://install.python-poetry.org | python3 -
+```
+
+or on Windows:
+
+```bash
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 ```
 
 Once installed, make sure Poetry is in your system's PATH so you can run it from any terminal window. Verify the installation by checking the version:
@@ -122,11 +154,13 @@ poetry run python -m carveracontroller
 The application is packaged using PyInstaller (except for iOS). This tool converts Python applications into a standalone executable, so it can be run on systems without requiring management of a installed Python interpreter or dependent libraries. An build helper script is configured with Poetry and can be run with:
 
 ```bash
-poetry run python scripts/build.py --os os [--no-appimage]
+poetry run python scripts/build.py --os os --version version [--no-appimage]
 ```
 
-The options for `os` are windows, macos, linux or ios. If selecting `linux`, an appimage is built by default unless --no-appimage is specified.
+The options for `os` are windows, macos, linux, pypi or ios. If selecting `linux`, an appimage is built by default unless --no-appimage is specified.
 For iOS, the project will be open in XCode and needs to be built from there to simplify the signing process.
+
+The value of `version` should be in the format of X.Y.Z e.g., 1.2.3.
 
 ### Setting up translations
 
