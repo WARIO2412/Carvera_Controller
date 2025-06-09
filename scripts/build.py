@@ -426,7 +426,7 @@ def main():
         osxutils.sign_binary(f"dist/{PACKAGE_NAME}.app", deep=True)
         create_macos_dmg()
     
-    #logger.info("Renaming artifacts to have version number and platform in filename")
+    logger.info("Renaming artifacts to have version number and platform in filename")
     rename_release_file(os_name, package_version)
 
     logger.info("Restoring files modified by codegen")

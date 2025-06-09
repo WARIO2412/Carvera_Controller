@@ -1211,7 +1211,6 @@ class LocalRV(DataRV):
         super(LocalRV, self).__init__(**kwargs)
         self.register_event_type('on_select')
         if kivy_platform == 'android':
-            print('Android local rv')
             self.curr_dir = os.path.abspath('.carveracontroller/gcodes')
             if not os.path.exists(self.curr_dir):
                 self.curr_dir = os.path.join(os.path.dirname(__file__), 'carveracontroller/gcodes')
