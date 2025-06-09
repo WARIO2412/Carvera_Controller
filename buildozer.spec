@@ -325,7 +325,7 @@ android.archs = armeabi-v7a
 #p4a.fork = kivy
 
 # (str) python-for-android branch to use, defaults to master
-#p4a.branch = master
+p4a.branch = develop
 
 																							  
 				  

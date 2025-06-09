@@ -291,6 +291,23 @@ def update_buildozer_version(package_version: str) -> None:
         file.writelines(lines)
 
 
+def update_buildozer_automation() -> None:
+    """Update buildozer.spec for automation/CI environment."""
+    logger.info("Updating buildozer.spec for automation")
+    buildozer_spec_path = ROOT_PATH.joinpath("buildozer.spec")
+    
+    with open(buildozer_spec_path, 'r') as file:
+        lines = file.readlines()
+    
+    for i, line in enumerate(lines):
+        if line.startswith('# android.accept_sdk_license = '):
+            lines[i] = 'android.accept_sdk_license = True\n'
+            break
+    
+    with open(buildozer_spec_path, 'w') as file:
+        file.writelines(lines)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -304,6 +321,12 @@ def main():
     )
 
     parser.add_argument('--no-appimage', dest='appimage', action='store_false')
+    
+    parser.add_argument(
+        '--automation',
+        action='store_true',
+        help='Enable automation mode for CI environments'
+    )
 
     parser.add_argument(
         "--version",
@@ -349,6 +372,10 @@ def main():
         # For Android we need some special handling as it is not supported by pyinstaller
         # Update version in buildozer.spec
         update_buildozer_version(package_version)
+        
+        # Update buildozer.spec for automation if flag is set
+        if args.automation:
+            update_buildozer_automation()
         
         # First ensure buildozer is installed and environment is set up
         setup_command = f"{BUILD_PATH}/build_android.sh"
