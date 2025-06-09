@@ -232,7 +232,7 @@ def rename_release_file(os_name, package_version):
     elif os_name == "android":
         arch_name = "armeabi-v7a"
         file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
-        src = f"./bin/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
+        src = f"./bin/carveracontroller-community-{package_version}-{arch_name}-debug.apk"
         dst = f"./dist/{file_name}"
 
     shutil.move(src, dst)
@@ -392,18 +392,6 @@ def main():
         if result.returncode != 0:
             logger.error("Error building Android APK")
             sys.exit(result.returncode)
-        try:
-            # List contents of bin directory to help debug APK location
-            bin_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "bin")
-            logger.info(f"Contents of {bin_path}:")
-            if os.path.exists(bin_path):
-                for item in os.listdir(bin_path):
-                    logger.info(f"  {item}")
-            else:
-                logger.info("  bin directory does not exist")
-        except Exception as e:
-            logger.warning(f"Failed to list bin directory contents: {e}")
-            # Continue execution even if listing fails
 
     ######### Pre PyInstaller tweaks #########
     if os == "windows":
