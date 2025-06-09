@@ -232,7 +232,7 @@ def rename_release_file(os_name, package_version):
     elif os_name == "android":
         arch_name = "armeabi-v7a"
         file_name = f"carveracontroller-community-{package_version}-android-{arch_name}.apk"
-        src = f"./bin/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
+        src = f"./dist/carveracontrollercommunity-{package_version}-{arch_name}-debug.apk"
         dst = f"./dist/{file_name}"
 
     shutil.move(src, dst)
@@ -429,7 +429,7 @@ def main():
         create_macos_dmg()
     
     #logger.info("Renaming artifacts to have version number and platform in filename")
-    #rename_release_file(os, package_version)
+    rename_release_file(os, package_version)
 
     logger.info("Restoring files modified by codegen")
     restore_codegen_files(ROOT_PATH, PROJECT_PATH)
