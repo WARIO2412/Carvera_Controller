@@ -202,26 +202,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get dev release info (JSON)
-        id: get_release
-        run: |
-          release=$(gh release view dev --json assets)
-          echo "$release"
-          asset_names=$(echo "$release" | jq -r '.assets[].name' | paste -sd ',' -)
-          echo "asset_names=$asset_names" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Delete all assets from dev release
-        if: steps.get_release.outputs.asset_names != ''
-        run: |
-          IFS=',' read -ra NAMES <<< "$asset_names"
-          for name in "${NAMES[@]}"; do
-            echo "Deleting asset name: $name"
-            gh release delete-asset dev $name -y
-          done
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: dev # This may also be of the form 'refs/tags/staging'
+          assets: 'carveracontroller-comunity-*'
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
