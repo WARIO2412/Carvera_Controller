@@ -219,6 +219,10 @@ jobs:
         distribution: 'temurin'  # or 'zulu', 'liberica', etc.
         java-version: '17'
 
+    - name: Install prereqs
+      run: |
+        poetry run ./scripts/install_android_prereqs.sh
+        
     - name: Build release
       run: |
         DATE=$(date +'%Y.%m.%d')
