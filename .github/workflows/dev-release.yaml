@@ -180,7 +180,7 @@ jobs:
 
     - name: Install prereqs
       run: |
-        poetry run python ./scripts/install_android_prereqs.sh
+        poetry run ./scripts/install_android_prereqs.sh
 
     - name: Build release
       run: |
