@@ -13,7 +13,7 @@ package.domain = org.carveracommunity
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,glsl,cnc,nc,tap,obj,txt,ttf,json,po,mo
+source.include_exts = glsl,jpg,json,kv,kvbu,mo,nc,obj,png,po,pot,py,ttf,txt
 
 
 # (list) List of inclusions using pattern matching
@@ -27,7 +27,7 @@ source.include_exts = py,png,jpg,kv,atlas,glsl,cnc,nc,tap,obj,txt,ttf,json,po,mo
 
 # (list) List of exclusions using pattern matching
 						 
-#source.exclude_patterns = license,images/*/*.jpg
+source.exclude_patterns = */__pycache__/*.*
 
 # (str) Application versioning (method 1)
 version = 0.0.0
@@ -38,7 +38,7 @@ version = 0.0.0
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.3.1,pyserial==3.5,goto-statement,pyquicklz==1.4.1,filetype, android
+requirements = python3,kivy==2.3.1,pyserial==3.5,pyquicklz==1.4.1,filetype==1.2.0,android
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -68,10 +68,10 @@ orientation = landscape
 # author = © Copyright Info
 
 # change the major version of python used by the app
-osx.python_version = 3
+#osx.python_version = 3
 
 # Kivy version to use
-osx.kivy_version = 2.3.1
+#osx.kivy_version = 2.3.1
 
 #
 # Android specific
