@@ -4079,6 +4079,10 @@ class MakeraApp(App):
     def on_start(self):
         Window.update_viewport()
 
+
+    def on_pause(self):
+        return True
+
 def load_app_configs():
     if Config.has_option('carvera', 'ui_density_override') and Config.get('carvera', 'ui_density_override') == "1":
         Metrics.set_density(float(Config.get('carvera', 'ui_density')))

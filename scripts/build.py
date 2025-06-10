@@ -177,7 +177,8 @@ def backup_codegen_files(root_path, project_path):
     backup_dir = Path('scripts/backup')
     files_to_backup = [
         Path(root_path, 'pyproject.toml'),
-        Path(project_path, '__version__.py')
+        Path(project_path, '__version__.py'),
+        Path(project_path, 'buildozer.spec')
     ]
     backup_dir.mkdir(parents=True, exist_ok=True)
     for file_path in files_to_backup:
@@ -191,7 +192,8 @@ def restore_codegen_files(root_path, project_path):
     backup_dir = Path('scripts/backup')
     files_to_restore = [
         { "source_name": 'pyproject.toml', "restore_path": root_path / 'pyproject.toml'} ,
-        { "source_name": '__version__.py', "restore_path": project_path / '__version__.py'}
+        { "source_name": '__version__.py', "restore_path": project_path / '__version__.py'},
+        { "source_name": 'buildozer.spec', "restore_path": project_path / 'buildozer.spec'}
     ]
     for file in files_to_restore:
         source_path = Path(backup_dir / file["source_name"])
@@ -339,6 +341,12 @@ def main():
     )
 
     parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable debug mode with deploy, run and logcat for Android builds'
+    )
+
+    parser.add_argument(
         "--version",
         metavar="version",
         required=True,
@@ -387,21 +395,25 @@ def main():
         # Update buildozer.spec for automation if flag is set
         if args.automation:
             update_buildozer_automation()
-        
-        # First ensure buildozer is installed and environment is set up
-        setup_command = f"{BUILD_PATH}/build_android.sh"
-        logger.info("Setting up Android build environment...")
-        result = subprocess.run(setup_command, shell=True)
-        if result.returncode != 0:
-            logger.error("Error setting up Android build environment")
-            sys.exit(result.returncode)
+
+        if not os.path.exists(f"./main.py"):
+            logger.info("Copying main.py to root directory for android build")
+            shutil.copy2(f"{ROOT_ASSETS_PATH}/android/main.py", "./main.py")
+
         # Then run the actual build
         logger.info("Building Android APK...")
-        build_command = "buildozer -v android debug"
+        if args.debug:
+            build_command = "buildozer android debug deploy run logcat"
+        else:
+            build_command = "buildozer -v android debug"
         result = subprocess.run(build_command, shell=True)
         if result.returncode != 0:
             logger.error("Error building Android APK")
             sys.exit(result.returncode)
+
+        if os.path.exists(f"./main.py"):
+            logger.info("Removing main.py from root directory for android build")
+            os.remove(f"./main.py")
 
     ######### Pre PyInstaller tweaks #########
     if os_name == "windows":
