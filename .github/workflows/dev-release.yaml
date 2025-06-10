@@ -158,24 +158,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Used to cache dependencies with a timeout
-    - name: Get Date
-      id: get-date
-      run: |
-        echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Cache Buildozer global directory
-      uses: actions/cache@v4
-      with:
-        path: .buildozer_global
-        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
-
-    - uses: actions/cache@v4
-      with:
-        path: .buildozer
-        key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
-
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
@@ -220,26 +202,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get dev release info (JSON)
-        id: get_release
-        run: |
-          release=$(gh release view dev --json assets)
-          echo "$release"
-          asset_names=$(echo "$release" | jq -r '.assets[].name' | paste -sd ',' -)
-          echo "asset_names=$asset_names" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Delete all assets from dev release
-        if: steps.get_release.outputs.asset_names != ''
-        run: |
-          IFS=',' read -ra NAMES <<< "$asset_names"
-          for name in "${NAMES[@]}"; do
-            echo "Deleting asset name: $name"
-            gh release delete-asset dev $name -y
-          done
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: dev # This may also be of the form 'refs/tags/staging'
+          assets: 'carveracontroller-comunity-*'
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -250,7 +218,7 @@ jobs:
           git push origin dev --force
 
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.2
         with:
           files: |
             windows-assets-*/carveracontroller-community-*-windows-x64.exe
