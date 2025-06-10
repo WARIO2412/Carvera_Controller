@@ -171,11 +171,6 @@ jobs:
         path: .buildozer_global
         key: buildozer-global-${{ hashFiles('buildozer.spec') }}
 
-    - uses: actions/cache@v4
-      with:
-        path: .buildozer
-        key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('buildozer.spec') }}
-
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
