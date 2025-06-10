@@ -178,7 +178,7 @@ def backup_codegen_files(root_path, project_path):
     files_to_backup = [
         Path(root_path, 'pyproject.toml'),
         Path(project_path, '__version__.py'),
-        Path(project_path, 'buildozer.spec')
+        Path(root_path, 'buildozer.spec')
     ]
     backup_dir.mkdir(parents=True, exist_ok=True)
     for file_path in files_to_backup:
@@ -193,7 +193,7 @@ def restore_codegen_files(root_path, project_path):
     files_to_restore = [
         { "source_name": 'pyproject.toml', "restore_path": root_path / 'pyproject.toml'} ,
         { "source_name": '__version__.py', "restore_path": project_path / '__version__.py'},
-        { "source_name": 'buildozer.spec', "restore_path": project_path / 'buildozer.spec'}
+        { "source_name": 'buildozer.spec', "restore_path": root_path / 'buildozer.spec'}
     ]
     for file in files_to_restore:
         source_path = Path(backup_dir / file["source_name"])

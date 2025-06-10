@@ -30,7 +30,7 @@ source.include_exts = glsl,jpg,json,kv,kvbu,mo,nc,obj,png,po,pot,py,ttf,txt
 source.exclude_patterns = */__pycache__/*.*
 
 # (str) Application versioning (method 1)
-version = 0.8.2
+version = 0.0.0
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
