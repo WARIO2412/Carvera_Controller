@@ -252,7 +252,7 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
+          files_glob: |
             windows-assets-*/carveracontroller-community-*-windows-x64.exe
             macos-assets-*/carveracontroller-community-*.dmg
             linux-assets-*/carveracontroller-community-*.appimage
