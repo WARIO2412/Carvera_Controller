@@ -813,6 +813,11 @@ class LaserDropDown(ToolTipDropDown):
     def on_dismiss(self):
         self.opened = False
 
+class CoordinateSystemDropDown(ToolTipDropDown):
+    opened = False
+
+    def on_dismiss(self):
+        self.opened = False
 
 class FuncDropDown(ToolTipDropDown):
     pass
@@ -1443,6 +1448,7 @@ class Makera(RelativeLayout):
     spindle_drop_down = ObjectProperty()
     tool_drop_down = ObjectProperty()
     laser_drop_down = ObjectProperty()
+    coordinate_system_drop_down = ObjectProperty()
     func_drop_down = ObjectProperty()
     status_drop_down = ObjectProperty()
 
@@ -1609,6 +1615,7 @@ class Makera(RelativeLayout):
         self.spindle_drop_down = SpindleDropDown()
         self.tool_drop_down = ToolDropDown()
         self.laser_drop_down = LaserDropDown()
+        self.coordinate_system_drop_down = CoordinateSystemDropDown()
         self.func_drop_down = FuncDropDown()
         self.status_drop_down = StatusDropDown()
         self.operation_drop_down = OperationDropDown()
@@ -2086,6 +2093,40 @@ class Makera(RelativeLayout):
             self.remote_dir_drop_down.add_widget(btn)
 
         self.remote_dir_drop_down.open(button)
+
+    def open_coordinate_system_drop_down(self, button):
+        self.coordinate_system_drop_down.clear_widgets()
+        
+        # Add coordinate system options (G54-G59)
+        coord_systems = [
+            ('G54', 0),
+            ('G55', 1), 
+            ('G56', 2),
+            ('G57', 3),
+            ('G58', 4),
+            ('G59', 5)
+        ]
+        
+        for coord_name, coord_index in coord_systems:
+            btn = Button(text=coord_name, size_hint_y=None, height='35dp')
+            btn.bind(on_release=lambda btn, index=coord_index: self.select_coordinate_system(index))
+            self.coordinate_system_drop_down.add_widget(btn)
+        
+        self.coordinate_system_drop_down.open(button)
+
+    def select_coordinate_system(self, coord_index):
+        """Select a coordinate system (0=G54, 1=G55, etc.)"""
+        coord_commands = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
+        if 0 <= coord_index < len(coord_commands):
+            self.controller.executeCommand(coord_commands[coord_index])
+        self.coordinate_system_drop_down.dismiss()
+
+    def get_coordinate_system_name(self, coord_index):
+        """Get coordinate system name from index"""
+        coord_names = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
+        if 0 <= coord_index < len(coord_names):
+            return coord_names[coord_index]
+        return 'G54'  # Default
 
     # -----------------------------------------------------------------------
     def reconnect_wifi_conn(self, button):
@@ -3308,6 +3349,12 @@ class Makera(RelativeLayout):
             self.laser_data_view.minr_text = "{:.0f}".format(CNC.vars["laserscale"]) + " %"
             self.laser_drop_down.status_scale.value = "{:.0f}".format(CNC.vars["laserscale"]) + "%"
 
+            # update coordinate system data
+            coord_system_index = CNC.vars["active_coord_system"]
+            coord_system_name = self.get_coordinate_system_name(coord_system_index)
+            rotation_angle = CNC.vars["rotation_angle"]
+            self.coord_system_data_view.main_text = coord_system_name
+            self.coord_system_data_view.minr_text = "{:.1f}°".format(rotation_angle)
 
             elapsed = now - self.control_list['laser_mode'][0]
             if elapsed < 2:

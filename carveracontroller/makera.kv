@@ -3196,6 +3196,7 @@
     spindle_data_view: spindle_data_view
     tool_data_view: tool_data_view
     laser_data_view: laser_data_view
+    coord_system_data_view: coord_system_data_view
     float_layout: float_layout
     step_a: step_a
     step_z: step_z
@@ -3330,6 +3331,17 @@
                 on_release:
                     root.laser_drop_down.open(self)
                     root.laser_drop_down.opened = True
+
+            TopDataView:
+                id: coord_system_data_view
+                data_text: 'CS'
+                tooltip_txt: tr._('Coordinate System')
+                main_text: "G54"
+                minr_text: "0.0°"
+                disabled: app.state == 'N/A'
+                on_release:
+                    root.coordinate_system_drop_down.open(self)
+                    root.coordinate_system_drop_down.opened = True
 
             Label:
                 text: ''
