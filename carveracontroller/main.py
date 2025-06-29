@@ -787,7 +787,6 @@ class WCSSettingsPopup(ModalView):
             # wcs_data format: {'G54': [x, y, z, a, rotation], 'G55': [...], ...}
             
             for wcs, values in wcs_data.items():
-                print(values)
                 if len(values) >= 6:  # Ensure we have X, Y, Z, A, rotation
                     x, y, z, a, b, rotation = values
                     
@@ -2319,19 +2318,20 @@ class Makera(RelativeLayout):
                     if remote_time != None:
                         if abs(int(time.time()) - time.timezone - int(remote_time[0].split('=')[1])) > 10:
                             self.controller.syncTime()
-
-                    remote_version = re.search('version = [0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9\-_]*', line)
+                
+                    remote_version = re.search(r'version = [0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9\-_]*', line)
+                    app = App.get_running_app()
                     if remote_version != None:
-                        self.fw_version_old = remote_version[0].split('=')[1]
-                        # Check if firmware version contains 'c' to detect community firmware
-                        app = App.get_running_app()
-                        if 'c' in self.fw_version_old.lower():
+                        if 'c' in remote_version[0]:
                             app.is_community_firmware = True
                         else:
                             app.is_community_firmware = False
+                        remote_version = re.search(r'version = [0-9]+\.[0-9]+\.[0-9]', remote_version[0])
+                    if remote_version != None:
+                        self.fw_version_old = remote_version[0].split('=')[1]
                         if self.fw_version_new != '':
                             self.check_fw_version()
-
+                    
                     remote_model = re.search('del = [a-zA-Z0-9]+', line)
                     if remote_model != None:
                         Clock.schedule_once(partial(self.setUIForModel, remote_model[0].split('=')[1]), 0)

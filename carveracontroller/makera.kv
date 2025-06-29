@@ -3540,6 +3540,7 @@
 
                                         # 4th row
                                         GridBoxLayout:
+                                            disabled: app.is_community_firmware == False
                                             SmallRoundButton:
                                                 text: tr._('Probing...')
                                                 on_release: app.root.probing_popup.open()
