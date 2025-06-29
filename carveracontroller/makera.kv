@@ -534,7 +534,7 @@
         values: 'G54', 'G55', 'G56', 'G57', 'G58', 'G59'
         on_text:
             if self.text != tr._("Activate WCS"): app.root.controller.executeCommand(self.text)
-            if self.text != tr._("Activate WCS"): self.text = tr._('Change active WCS')
+            if self.text != tr._("Activate WCS"): self.text = tr._('Activate WCS')
             root.select('Third Item')
     
     Button:
@@ -936,8 +936,6 @@
             on_release:
                 root.scale_slider.value = 100
                 root.select('Third Item')
-
-
 
 <FuncDropDown>:
     canvas.before:
@@ -3287,7 +3285,6 @@
 
             TopDataView:
                 id: x_data_view
-                width: '100dp'
                 color: 231/255, 76/255, 60/255, 1
                 data_text: 'X'
                 main_text: "{:.3f}".format(1.0)
@@ -3297,7 +3294,6 @@
 
             TopDataView:
                 id: y_data_view
-                width: '100dp'
                 color: 34/255, 153/255, 84/255, 1
                 data_text: 'Y'
                 main_text: "{:.3f}".format(1.0)
@@ -3307,7 +3303,6 @@
 
             TopDataView:
                 id: z_data_view
-                width: '100dp'
                 color: 52/255, 152/255, 219/255, 1
                 data_text: 'Z'
                 main_text: "{:.3f}".format(1.0)
@@ -3326,7 +3321,6 @@
                 on_release: root.a_drop_down.open(self)
             TopDataView:
                 id: coord_system_data_view
-                width: '95dp'
                 tooltip_txt: tr._('Coordinate System')
                 main_text: "G54"
                 minr_text: "0.0°"

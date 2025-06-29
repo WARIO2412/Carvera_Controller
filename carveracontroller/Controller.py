@@ -928,7 +928,7 @@ class Controller:
             else:
                 self.parseBigParentheses(line)
                 self.sio_diagnose = False
-        elif line[0] == "[" and "G5" in line:
+        elif line[0] == "[" in line:
             # Log raw WCS parameters before parsing
             self.log.put((self.MSG_NORMAL, line))
             # Parse WCS parameters: [G54:-123.6800,-123.6800,-123.6800,-50,0.000,25.123]
@@ -1045,7 +1045,6 @@ class Controller:
 
     def parseWCSParameters(self, line):
         """Parse WCS parameters from machine response"""
-        import re
         # Parse format: [G54:-123.6800,-123.6800,-123.6800,-50,0.000,25.123]
         # Extract all WCS entries from the line
         wcs_pattern = r'\[(G5[4-9]):([^]]+)\]'
@@ -1063,7 +1062,7 @@ class Controller:
                     a = float(values[3])
                     b = float(values[4])  # B is always 0
                     rotation = float(values[5])
-                    wcs_data[wcs_code] = [x, y, z, a, rotation]  # Store only X, Y, Z, A, Rotation
+                    wcs_data[wcs_code] = [x, y, z, a, b, rotation]  # Store only X, Y, Z, A, B, Rotation
                     
                 except (ValueError, IndexError):
                     print(f"Error parsing WCS values for {wcs_code}: {values_str}")

@@ -761,11 +761,11 @@ class MoveAPopup(ModalView):
         super(MoveAPopup, self).__init__(**kwargs)
 
 class WCSSettingsPopup(ModalView):
-    def __init__(self, controller, get_coordinate_system_index, **kwargs):
+    def __init__(self, controller, coord_names, **kwargs):
         super(WCSSettingsPopup, self).__init__(**kwargs)
         self.controller = controller
-        self.get_coordinate_system_index = get_coordinate_system_index
         self.original_values = {}  # Store original values for comparison
+        self.coord_names = coord_names
     
     def on_open(self):
         """Parse WCS values from machine and populate fields when popup opens"""
@@ -782,19 +782,18 @@ class WCSSettingsPopup(ModalView):
     
     def populate_wcs_values(self, wcs_data):
         """Populate the WCS fields with parsed data from machine"""
-        # Schedule UI updates on main thread
-        from kivy.clock import Clock
         
         def update_ui(dt):
             # wcs_data format: {'G54': [x, y, z, a, rotation], 'G55': [...], ...}
             
             for wcs, values in wcs_data.items():
-                if len(values) >= 5:  # Ensure we have X, Y, Z, A, rotation
-                    x, y, z, a, rotation = values
+                print(values)
+                if len(values) >= 6:  # Ensure we have X, Y, Z, A, rotation
+                    x, y, z, a, b, rotation = values
                     
                     # Store original values for comparison
                     self.original_values[wcs] = {
-                        'X': x, 'Y': y, 'Z': z, 'A': a, 'R': rotation
+                        'X': x, 'Y': y, 'Z': z, 'A': a, 'B': b, 'R': rotation
                     }
                     
                     # Update the corresponding text input fields
@@ -817,8 +816,7 @@ class WCSSettingsPopup(ModalView):
             return
             
         # Get coordinate system index mapping
-        coord_names = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
-        for wcs in coord_names:
+        for wcs in self.coord_names:
             if wcs not in self.original_values:
                 continue
                 
@@ -844,7 +842,7 @@ class WCSSettingsPopup(ModalView):
             
             # Send commands for changed values
             if changed_values:
-                coord_index = coord_names.index(wcs) + 1  # G54=1, G55=2, etc.
+                coord_index = self.coord_names.index(wcs) + 1  # G54=1, G55=2, etc.
                 cmd = f"G10L2P{coord_index}"
                 # Build offset command if any offsets changed
                 offset_changes = {k: v for k, v in changed_values.items() if k in ['X', 'Y', 'Z', 'A']}
@@ -878,8 +876,7 @@ class WCSSettingsPopup(ModalView):
     
     def clear_all_wcs(self):
         """Clear all offsets and rotations for all WCS systems"""
-        wcs_list = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
-        for wcs in wcs_list:
+        for wcs in self.coord_names:
             self.clear_wcs_offsets(wcs)
             self.clear_wcs_rotation(wcs)
 
@@ -1727,6 +1724,8 @@ class Makera(RelativeLayout):
                 'yp_offset':0.0,
             }
         }
+
+        self.coord_names = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
         self.update_coord_config()
         self.coord_popup = CoordPopup(self.coord_config)
         self.xyz_probe_popup = XYZProbePopup()
@@ -1762,7 +1761,7 @@ class Makera(RelativeLayout):
         self.input_popup = InputPopup()
 
         self.probing_popup = ProbingPopup(self.controller)
-        self.wcs_settings_popup = WCSSettingsPopup(self.controller, self.get_coordinate_system_index)
+        self.wcs_settings_popup = WCSSettingsPopup(self.controller, self.coord_names)
         self.set_rotation_popup = SetRotationPopup(self.controller, self.cnc)
         self.comports_drop_down = DropDown(auto_width=False, width='250dp')
         self.wifi_conn_drop_down = DropDown(auto_width=False, width='250dp')
@@ -2230,45 +2229,6 @@ class Makera(RelativeLayout):
             self.remote_dir_drop_down.add_widget(btn)
 
         self.remote_dir_drop_down.open(button)
-
-    def open_coordinate_system_drop_down(self, button):
-        self.coordinate_system_drop_down.clear_widgets()
-        
-        # Add coordinate system options (G54-G59)
-        coord_systems = [
-            ('G54', 0),
-            ('G55', 1), 
-            ('G56', 2),
-            ('G57', 3),
-            ('G58', 4),
-            ('G59', 5)
-        ]
-        
-        for coord_name, coord_index in coord_systems:
-            btn = Button(text=coord_name, size_hint_y=None, height='35dp')
-            btn.bind(on_release=lambda btn, index=coord_index: self.select_coordinate_system(index))
-            self.coordinate_system_drop_down.add_widget(btn)
-        
-        self.coordinate_system_drop_down.open(button)
-
-    def select_coordinate_system(self, coord_index):
-        """Select a coordinate system (0=G54, 1=G55, etc.)"""
-        coord_commands = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
-        if 0 <= coord_index < len(coord_commands):
-            self.controller.executeCommand(coord_commands[coord_index])
-        self.coordinate_system_drop_down.dismiss()
-
-    def get_coordinate_system_name(self, coord_index):
-        """Get coordinate system name from index"""
-        coord_names = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
-        if 0 <= coord_index < len(coord_names):
-            return coord_names[coord_index]
-        return 'G54'  # Default
-
-    def get_coordinate_system_index(self, coord_name):
-        """Get coordinate system index from name"""
-        coord_names = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59']
-        return coord_names.index(coord_name) + 1
 
     # -----------------------------------------------------------------------
     def reconnect_wifi_conn(self, button):
@@ -3493,7 +3453,7 @@ class Makera(RelativeLayout):
 
             # update coordinate system data
             coord_system_index = CNC.vars["active_coord_system"]
-            coord_system_name = self.get_coordinate_system_name(coord_system_index)
+            coord_system_name = self.coord_names[coord_system_index]
             rotation_angle = CNC.vars["rotation_angle"]
             self.coord_system_data_view.main_text = coord_system_name
             self.coord_system_data_view.minr_text = "{:.1f}°".format(rotation_angle)
