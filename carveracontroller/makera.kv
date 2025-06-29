@@ -3324,7 +3324,7 @@
                 tooltip_txt: tr._('Coordinate System')
                 main_text: "G54"
                 minr_text: "0.0°"
-                disabled: app.state == 'N/A'
+                disabled: app.state == 'N/A' or app.is_community_firmware == False
                 on_release:
                     root.coordinate_system_drop_down.open(self)
                     root.coordinate_system_drop_down.opened = True

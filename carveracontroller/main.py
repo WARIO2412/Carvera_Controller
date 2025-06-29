@@ -2320,9 +2320,15 @@ class Makera(RelativeLayout):
                         if abs(int(time.time()) - time.timezone - int(remote_time[0].split('=')[1])) > 10:
                             self.controller.syncTime()
 
-                    remote_version = re.search('version = [0-9]+\.[0-9]+\.[0-9]+', line)
+                    remote_version = re.search('version = [0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9\-_]*', line)
                     if remote_version != None:
                         self.fw_version_old = remote_version[0].split('=')[1]
+                        # Check if firmware version contains 'c' to detect community firmware
+                        app = App.get_running_app()
+                        if 'c' in self.fw_version_old.lower():
+                            app.is_community_firmware = True
+                        else:
+                            app.is_community_firmware = False
                         if self.fw_version_new != '':
                             self.check_fw_version()
 
@@ -4293,6 +4299,7 @@ class MakeraApp(App):
     total_pages = NumericProperty(1)
     loading_page = BooleanProperty(False)
     model = StringProperty('C1')
+    is_community_firmware = BooleanProperty(False)
 
     def on_stop(self):
         self.root.stop_run()
