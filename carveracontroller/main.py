@@ -845,17 +845,16 @@ class WCSSettingsPopup(ModalView):
             # Send commands for changed values
             if changed_values:
                 coord_index = coord_names.index(wcs) + 1  # G54=1, G55=2, etc.
-                
+                cmd = f"G10L2P{coord_index}"
                 # Build offset command if any offsets changed
                 offset_changes = {k: v for k, v in changed_values.items() if k in ['X', 'Y', 'Z', 'A']}
                 if offset_changes:
-                    cmd = f"G10L2P{coord_index}"
                     for axis, value in offset_changes.items():
                         cmd += f"{axis}{value:.3f}"
-                    # Send rotation command if rotation changed
-                    if 'R' in changed_values:
-                        cmd += f"R{changed_values['R']:.1f}"
-                    self.controller.executeCommand(cmd)
+                # Send rotation command if rotation changed
+                if 'R' in changed_values:
+                    cmd += f"R{changed_values['R']:.1f}"
+                self.controller.executeCommand(cmd)
                 
                 
     
@@ -1579,12 +1578,12 @@ class Makera(RelativeLayout):
     y_drop_down = ObjectProperty()
     z_drop_down = ObjectProperty()
     a_drop_down = ObjectProperty()
+    coordinate_system_drop_down = ObjectProperty()
 
     feed_drop_down = ObjectProperty()
     spindle_drop_down = ObjectProperty()
     tool_drop_down = ObjectProperty()
     laser_drop_down = ObjectProperty()
-    coordinate_system_drop_down = ObjectProperty()
     func_drop_down = ObjectProperty()
     status_drop_down = ObjectProperty()
 
@@ -1747,11 +1746,11 @@ class Makera(RelativeLayout):
         self.y_drop_down = YDropDown()
         self.z_drop_down = ZDropDown()
         self.a_drop_down = ADropDown()
+        self.coordinate_system_drop_down = CoordinateSystemDropDown()
         self.feed_drop_down = FeedDropDown()
         self.spindle_drop_down = SpindleDropDown()
         self.tool_drop_down = ToolDropDown()
         self.laser_drop_down = LaserDropDown()
-        self.coordinate_system_drop_down = CoordinateSystemDropDown()
         self.func_drop_down = FuncDropDown()
         self.status_drop_down = StatusDropDown()
         self.operation_drop_down = OperationDropDown()
