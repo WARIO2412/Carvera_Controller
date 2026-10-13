@@ -426,6 +426,13 @@ class Controller:
     #         cmd = "buffer " + cmd
     #     self.executeCommand(cmd)
 
+    def liftToClearance(self, buffer=False):
+        # only Z to coordinate.clearance_z (machine coordinates); XY stays where it is
+        cmd = "G90 G53 G0 Z%g\n" % CNC.vars["clearance_z"]
+        if buffer:
+            cmd = "buffer " + cmd
+        self.executeCommand(cmd)
+
     def gotoClearance(self, buffer=False):
         cmd = "M496.1\n"
         if buffer:
