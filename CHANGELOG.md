@@ -1,3 +1,6 @@
+[unreleased]
+- Fixed: Android builds were incorrectly detecting the default language
+
 [2.3.0-RC1]
 - Enhancement: Upload and download multiple selected files from the file browser, with one progress popup for the batch
 - Enhancement: Shift-click selects a range of files in the file browser and turns multi-select on if it was off
