@@ -1,5 +1,6 @@
 [unreleased]
 - Fixed: Android builds were incorrectly detecting the default language
+- Enhancement: Every file playback will goto a safe_Z
 
 [2.3.0-RC1]
 - Enhancement: Upload and download multiple selected files from the file browser, with one progress popup for the batch
