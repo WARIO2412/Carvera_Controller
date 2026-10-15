@@ -6699,12 +6699,8 @@ class Makera(RelativeLayout):
             # If it is a compressed ''.lz' file, wait for the decompression to complete.
             if self.uploading_file.endswith(".lz") and getattr(self, "_batch_kind", None) != "upload":
                 self.log = logging.getLogger("File.Decompress")
-                self.decompstatus = True
                 os.remove(self.uploading_file)
-                self.decomptime = time.time()
-                Clock.schedule_once(
-                    partial(self.progressStart, tr._("Decompressing") + "\n%s" % displayname, False), 0.2
-                )
+                Clock.schedule_once(partial(self._start_decompress_wait, displayname), 0.2)
             elif self.uploading_file.endswith(".lz"):
                 self.log = logging.getLogger("File.Decompress")
                 self.decompstatus = True
@@ -6825,6 +6821,13 @@ class Makera(RelativeLayout):
         else:
             self.progress_popup.btn_cancel.disabled = True
         self.progress_popup.open()
+
+    def _start_decompress_wait(self, displayname, *args):
+        # The machine reports decompress progress before "upload success", so a small file can be
+        # finished already. Watch for it only once the popup is open, so the finish closes this popup.
+        self.progressStart(tr._("Decompressing") + "\n%s" % displayname, False)
+        self.decomptime = time.time()
+        self.decompstatus = True
 
     def _schedule_progress_finish(self, delay=0):
         """Close the progress popup later, unless a newer transfer has already taken it."""
