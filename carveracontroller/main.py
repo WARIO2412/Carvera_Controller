@@ -3634,6 +3634,9 @@ class Makera(RelativeLayout):
         # stop review play first
         self.gcode_playing = False
         self.gcode_viewer.dynamic_display = False
+        # Always start from the clearance height: M495 is not sent for every program (e.g. none
+        # without feed moves, or inside the path area without margin, Z probe or leveling)
+        self.controller.liftToClearance(buffer=True)
         # apply and play
         self.apply(True)
         # play file
