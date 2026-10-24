@@ -458,12 +458,52 @@ def _load_apple_framework(name: str):
         return ctypes.cdll.LoadLibrary(name)
 
 
+def _declare(function, argtypes, restype) -> None:
+    function.argtypes = argtypes
+    function.restype = restype
+
+
+def _declare_core_foundation(core_foundation) -> None:
+    """Pointer-sized Core Foundation signatures.
+
+    ctypes otherwise passes a CFTypeRef as a 32-bit int. On arm64 macOS that
+    truncated word is a tagged object such as an NSDate or NSNumber, and the
+    ``length`` message aborts the process. The NSException is not a Python
+    exception, so the signatures have to be right before the first call.
+    """
+    pointer = ctypes.c_void_p
+    index = ctypes.c_long
+    type_id = ctypes.c_ulong
+    boolean = ctypes.c_uint8
+    _declare(core_foundation.CFGetTypeID, [pointer], type_id)
+    _declare(core_foundation.CFStringGetTypeID, [], type_id)
+    _declare(core_foundation.CFURLGetTypeID, [], type_id)
+    _declare(core_foundation.CFStringCreateWithCString, [pointer, ctypes.c_char_p, ctypes.c_uint32], pointer)
+    _declare(core_foundation.CFStringGetLength, [pointer], index)
+    _declare(core_foundation.CFStringGetCString, [pointer, ctypes.c_char_p, index, ctypes.c_uint32], boolean)
+    _declare(core_foundation.CFRelease, [pointer], None)
+    _declare(core_foundation.CFArrayGetCount, [pointer], index)
+    _declare(core_foundation.CFArrayGetValueAtIndex, [pointer, index], pointer)
+    _declare(
+        core_foundation.CFURLGetFileSystemRepresentation,
+        [pointer, boolean, ctypes.c_char_p, index],
+        boolean,
+    )
+
+
+def _cf_type_is(core_foundation, ref, get_type_id) -> bool:
+    return bool(ref) and core_foundation.CFGetTypeID(ref) == get_type_id()
+
+
 def _cf_string(core_foundation, text: str):
+    _declare_core_foundation(core_foundation)
     return core_foundation.CFStringCreateWithCString(None, text.encode("utf-8"), _CF_STRING_UTF8)
 
 
 def _py_string(core_foundation, ref) -> str:
-    if not ref:
+    """A CFString as a Python str. A date, URL, or other CF type yields ``""``."""
+    _declare_core_foundation(core_foundation)
+    if not _cf_type_is(core_foundation, ref, core_foundation.CFStringGetTypeID):
         return ""
     length = core_foundation.CFStringGetLength(ref)
     size = int(length) * 4 + 1
@@ -471,6 +511,17 @@ def _py_string(core_foundation, ref) -> str:
     if not core_foundation.CFStringGetCString(ref, buffer, size, _CF_STRING_UTF8):
         return ""
     return buffer.value.decode("utf-8")
+
+
+def _cf_path(core_foundation, ref) -> str:
+    """Filesystem path of a CFURL. Anything that is not a URL yields ``""``."""
+    _declare_core_foundation(core_foundation)
+    if not _cf_type_is(core_foundation, ref, core_foundation.CFURLGetTypeID):
+        return ""
+    path_buffer = ctypes.create_string_buffer(4096)
+    if not core_foundation.CFURLGetFileSystemRepresentation(ref, 1, path_buffer, len(path_buffer)):
+        return ""
+    return path_buffer.value.decode("utf-8")
 
 
 def _macos_descriptor_records() -> list[tuple[str, str, str, int]] | None:
@@ -481,17 +532,8 @@ def _macos_descriptor_records() -> list[tuple[str, str, str, int]] | None:
     except OSError:
         return None
     pointer = ctypes.c_void_p
-    index_type = ctypes.c_long
-    boolean = ctypes.c_uint8
     try:
-        core_foundation.CFRelease.argtypes = [pointer]
-        core_foundation.CFRelease.restype = None
-        core_foundation.CFArrayGetCount.argtypes = [pointer]
-        core_foundation.CFArrayGetCount.restype = index_type
-        core_foundation.CFArrayGetValueAtIndex.argtypes = [pointer, index_type]
-        core_foundation.CFArrayGetValueAtIndex.restype = pointer
-        core_foundation.CFURLGetFileSystemRepresentation.argtypes = [pointer, boolean, ctypes.c_char_p, index_type]
-        core_foundation.CFURLGetFileSystemRepresentation.restype = boolean
+        _declare_core_foundation(core_foundation)
         core_text.CTFontCollectionCreateFromAvailableFonts.argtypes = [pointer]
         core_text.CTFontCollectionCreateFromAvailableFonts.restype = pointer
         core_text.CTFontCollectionCreateMatchingFontDescriptors.argtypes = [pointer]
@@ -526,12 +568,10 @@ def _macos_descriptor_records() -> list[tuple[str, str, str, int]] | None:
             try:
                 family = _py_string(core_foundation, family_ref)
                 style = _py_string(core_foundation, style_ref) or "Regular"
-                if not family or not url:
+                path = _cf_path(core_foundation, url)
+                if not family or not path:
                     continue
-                path_buffer = ctypes.create_string_buffer(4096)
-                if not core_foundation.CFURLGetFileSystemRepresentation(url, 1, path_buffer, len(path_buffer)):
-                    continue
-                records.append((family, style, path_buffer.value.decode("utf-8"), 0))
+                records.append((family, style, path, 0))
             finally:
                 release(family_ref)
                 release(style_ref)
@@ -552,23 +592,8 @@ def _macos_font_records() -> list[tuple[str, str, str, int]]:
     core_text = _load_apple_framework("CoreText")
     core_foundation = _load_apple_framework("CoreFoundation")
     pointer = ctypes.c_void_p
-    index_type = ctypes.c_long
-    boolean = ctypes.c_uint8
 
-    core_foundation.CFStringCreateWithCString.argtypes = [pointer, ctypes.c_char_p, ctypes.c_uint32]
-    core_foundation.CFStringCreateWithCString.restype = pointer
-    core_foundation.CFStringGetLength.argtypes = [pointer]
-    core_foundation.CFStringGetLength.restype = index_type
-    core_foundation.CFStringGetCString.argtypes = [pointer, ctypes.c_char_p, index_type, ctypes.c_uint32]
-    core_foundation.CFStringGetCString.restype = boolean
-    core_foundation.CFRelease.argtypes = [pointer]
-    core_foundation.CFRelease.restype = None
-    core_foundation.CFArrayGetCount.argtypes = [pointer]
-    core_foundation.CFArrayGetCount.restype = index_type
-    core_foundation.CFArrayGetValueAtIndex.argtypes = [pointer, index_type]
-    core_foundation.CFArrayGetValueAtIndex.restype = pointer
-    core_foundation.CFURLGetFileSystemRepresentation.argtypes = [pointer, boolean, ctypes.c_char_p, index_type]
-    core_foundation.CFURLGetFileSystemRepresentation.restype = boolean
+    _declare_core_foundation(core_foundation)
     core_text.CTFontManagerCopyAvailableFontFamilyNames.argtypes = []
     core_text.CTFontManagerCopyAvailableFontFamilyNames.restype = pointer
     core_text.CTFontCreateWithName.argtypes = [pointer, ctypes.c_double, pointer]
@@ -604,12 +629,9 @@ def _macos_font_records() -> list[tuple[str, str, str, int]]:
                 if _normalize(actual) != _normalize(family):
                     continue
                 url = core_text.CTFontCopyAttribute(font, url_attribute)
-                if not url:
+                path = _cf_path(core_foundation, url)
+                if not path:
                     continue
-                path_buffer = ctypes.create_string_buffer(4096)
-                if not core_foundation.CFURLGetFileSystemRepresentation(url, 1, path_buffer, len(path_buffer)):
-                    continue
-                path = path_buffer.value.decode("utf-8")
             finally:
                 release(url)
                 release(font)

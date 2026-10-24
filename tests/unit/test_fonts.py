@@ -1,8 +1,11 @@
 """Theme fonts: resolving a name or path to a Kivy ``font_name``."""
 
+import ctypes
 import os
 import struct
 import subprocess
+import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -560,6 +563,63 @@ def test_ios_without_core_text_reads_the_font_directory(monkeypatch, tmp_path):
     assert set(index) == {"Helvetica"}
     assert _face_path(index, "Helvetica") == str(font_dir / "Helvetica.ttc")
     assert _face_path(index, "Helvetica", "Bold") == str(font_dir / "Helvetica-Bold.ttf")
+
+
+class _CoreFoundationCall:
+    def __init__(self, result):
+        self.result = result
+        self.argtypes = None
+        self.restype = None
+        self.calls = []
+
+    def __call__(self, *args):
+        self.calls.append((self.argtypes, args))
+        return self.result
+
+
+def _core_foundation(**results):
+    names = (
+        "CFGetTypeID",
+        "CFStringGetTypeID",
+        "CFURLGetTypeID",
+        "CFStringCreateWithCString",
+        "CFStringGetLength",
+        "CFStringGetCString",
+        "CFRelease",
+        "CFArrayGetCount",
+        "CFArrayGetValueAtIndex",
+        "CFURLGetFileSystemRepresentation",
+    )
+    return SimpleNamespace(**{name: _CoreFoundationCall(results.get(name, 0)) for name in names})
+
+
+def test_cf_string_read_uses_a_pointer_argument_and_skips_other_types():
+    """A 32-bit CFStringGetLength argument aborts macOS with NSInvalidArgumentException."""
+    wide = 0x1_0000_0001_ABAD_03F0
+    string = _core_foundation(CFGetTypeID=7, CFStringGetTypeID=7, CFStringGetLength=0)
+    assert fonts._py_string(string, wide) == ""
+    assert string.CFStringGetLength.calls[0][0][0] is ctypes.c_void_p
+    assert string.CFStringGetLength.calls[0][1] == (wide,)
+
+    other = _core_foundation(CFGetTypeID=1, CFStringGetTypeID=7, CFStringGetLength=4)
+    assert fonts._py_string(other, wide) == ""
+    assert other.CFStringGetLength.calls == []
+
+
+def test_cf_path_skips_a_value_that_is_not_a_url():
+    wide = 0x1_0000_0001_ABAD_03F0
+    other = _core_foundation(CFGetTypeID=1, CFURLGetTypeID=9)
+    assert fonts._cf_path(other, wide) == ""
+    assert other.CFURLGetFileSystemRepresentation.calls == []
+
+
+@pytest.mark.skipif(sys.platform != "darwin", reason="Core Text font scan is macOS only")
+def test_macos_font_scan_returns_file_backed_faces():
+    records = fonts._macos_font_records()
+    assert records
+    families = {family for family, _style, _path, _index in records}
+    assert "Helvetica" in families or "Arial" in families
+    assert any(os.path.isfile(path) for _family, _style, path, _index in records)
 
 
 def test_ios_scan_warns_when_no_fonts_can_be_read(monkeypatch, tmp_path, caplog):
