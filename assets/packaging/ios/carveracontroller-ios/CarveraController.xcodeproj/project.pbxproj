@@ -295,6 +295,7 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				A1C0FFEE2E00000100000003 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -409,6 +410,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Update __version__.py \n\nVERSION_FILE=\"$PROJECT_DIR/carveracontrollerpkg/__version__.py\"\n\n# Get the current version from Info.plist\nAPP_VERSION=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"$INFOPLIST_FILE\")\n\n# Replace the version line in the Python file\nsed -i '' -E \"s/^(__version__ = ')[^']+'/\\1$APP_VERSION'/\" \"$VERSION_FILE\"\n\necho \"Updated __version__.py to version $APP_VERSION\"\n";
+		};
+		A1C0FFEE2E00000100000003 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -e\nAPP=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\nmkdir -p \"$APP/assets/fonts\"\ncp \"$PROJECT_DIR/../../../../assets/fonts/ARIALUNI.ttf\" \"$APP/assets/fonts/ARIALUNI.ttf\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
