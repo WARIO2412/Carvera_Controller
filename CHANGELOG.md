@@ -1,4 +1,5 @@
 [unreleased]
+- Fixed: Gamepad hotplug would not detect a reconnected controller
 - Fixed: Android builds were incorrectly detecting the default language
 - Fixed: File playback will start by going the configured clearance_z. Previously if the spindle was within the bounds of the gcode file margins, moving to clearance_z was not performed
 - Fixed: File picker for Config Backups on Windows didn't have a drive selector
