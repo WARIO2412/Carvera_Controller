@@ -1,6 +1,8 @@
 [unreleased]
 - Fixed: Android builds were incorrectly detecting the default language
-- Enhancement: Every file playback will start by going the configured clearance_z
+- Enhancement: Every file playback will start by going to the configured clearance_z
+- Enhancement: UI is now themed. You can select one of multiple visual styles in the Settings. Themes can be further customised in the theme editer.
+- Change: Previous G-Code highlighting settings page collapsed into theme settings
 
 [2.3.0-RC1]
 - Enhancement: Upload and download multiple selected files from the file browser, with one progress popup for the batch
