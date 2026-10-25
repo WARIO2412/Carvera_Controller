@@ -4,6 +4,7 @@
 - Fixed: File picker for Config Backups on Windows didn't have a drive selector
 - Fixed: Colors of the rows in the MDI were sometimes not matching their content
 - Fixed: Multi-line inputs were sent as a single frame instead of multiple ones
+- Fixed: Small files could enter a race condition on the upload and decompression progress bar
 
 [2.3.0-RC1]
 - Enhancement: Upload and download multiple selected files from the file browser, with one progress popup for the batch
