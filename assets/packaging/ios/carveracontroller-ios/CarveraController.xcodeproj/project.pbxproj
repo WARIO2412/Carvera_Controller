@@ -363,7 +363,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "rsync -av --delete \"$PROJECT_DIR/../../../../carveracontroller\"/ \"$PROJECT_DIR\"/carveracontrollerpkg\n";
+			shellScript = "rsync -av --delete --delete-excluded --exclude '*.so' --exclude '*.dylib' \"$PROJECT_DIR/../../../../carveracontroller\"/ \"$PROJECT_DIR\"/carveracontrollerpkg\n";
 		};
 		113D17E2153E3DB5001310A6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -470,6 +470,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -519,6 +520,7 @@
 				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
